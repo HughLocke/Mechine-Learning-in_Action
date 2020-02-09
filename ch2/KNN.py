@@ -70,6 +70,17 @@ def datingClassTest():
             errorCount += 1
     print("the total error rate is: %f"  % (errorCount/float(Testnum)))
 
+def classifyPerson():
+    resultList = ['not at all','in small does','in large doses']
+    percentTats = float(input("percentage of time spent playing video games?"))
+    ffMiles = float(input("frequent flier miles earned per year?"))
+    iceCream = float(input("liters of ice cream consumed per year?"))
+    datingDataMat,datingLabels = filetomatrix("datingTestSet2.txt")
+    normMat,ranges,minVals = autoNorm(datingDataMat)
+    inArr = array([ffMiles,percentTats,iceCream])
+    ans = classify0((inArr - minVals)/ranges,normMat,datingLabels,3)
+    print("you will probably like this person: %s" %resultList[ans - 1])
+
 if __name__ == '__main__':
     '''
     datingDataMat,datingLabels = filetomatrix("datingTestSet2.txt")
@@ -81,5 +92,7 @@ if __name__ == '__main__':
     ax.scatter(datingDataMat[:, 0], datingDataMat[:,1],
                15,c = datingLabels)
     plt.show()
+    26052	1.441871	0.805124	didntLike
+    67497	8.631577	0.749278	didntLike
     '''
-    datingClassTest()
+    classifyPerson()
