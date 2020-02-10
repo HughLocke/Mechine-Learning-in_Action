@@ -67,6 +67,7 @@ def createTree(dataSet,labels): #创建树,返回当前节点,如果是叶子节
     if len(dataSet[0]) == 1:    #当前只有一个属性,则返回占多数的结果
         return majorityCnt(anslist)
     bestFeatindex = chooseBestFeatureTosplit(dataSet)  #选出接下来的划分属性的下标
+    #print(bestFeatindex)
     bestFeatlabel = labels[bestFeatindex] #划分属性标签
    # print(bestFeatlabel)
     node = {bestFeatlabel:{}}
@@ -75,15 +76,45 @@ def createTree(dataSet,labels): #创建树,返回当前节点,如果是叶子节
     uniqueVals = set(featValues) #去重
     for value in uniqueVals:
         subLabels = labels[:]
-        node[bestFeatlabel][value] = createTree(splitDataSet(dataSet,bestFeatindex,value),labels)
+        tmplabels = labels.copy()
+        node[bestFeatlabel][value] = createTree(splitDataSet(dataSet,bestFeatindex,value),tmplabels)
     return node
+
+def zerokey(myTree):
+    for key in myTree:
+        return key
+
+def classify(inputTree,featLabels,testVec): #分类函数
+    firstStr = zerokey(inputTree)
+    secondDict = inputTree[firstStr]
+    featIndex = featLabels.index(firstStr)
+    for key in secondDict.keys():
+        if testVec[featIndex] == key:
+            if type(secondDict[key]).__name__ == 'dict':
+                ans = classify(secondDict[key],featLabels,testVec)
+            else:
+                ans = secondDict[key]
+    return ans
+
+def storeTree(inputTree,filename): #通过文件存储决策树
+    import pickle
+    fw = open(filename,'w')
+    pickle.dump(inputTree,fw)
+    fw.close()
+
+def grabTree(filename):
+    import pickle
+    fr = open(filename)
+    return pickle.load(fr)
 
 def main():
     Dataset, label = CreateDataSet()
     # print(Ent(dataset))
     # print(splitDataSet(dataset,1,1))
     # print(chooseBestFeatureTosplit(dataset))
-    return createTree(Dataset, label)
+    tmp = label.copy()
+    tree = createTree(Dataset, tmp)
+    print(classify(tree,label,[1,1]))
 
 if __name__ == '__main__':
     main()

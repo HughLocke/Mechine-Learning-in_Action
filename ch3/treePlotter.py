@@ -75,9 +75,12 @@ def createPlot(inTree):
     plotTree(inTree,(0.5,1.0),'')
     plt.show()
 
-if __name__ == '__main__':
-    Tree = tree.main()
-    #getNumLeafs(Tree)
-    #print(getNumLeafs(Tree))
-    #print(getTreeDeep(Tree))
+def main():
+    fr = open('lenses.txt')
+    lenses = [inst.strip().split('\t') for inst in fr.readlines()]
+    lensesLabels = ['age', 'prescript', 'astigmatic', 'tearRate']
+    Tree = tree.createTree(lenses,lensesLabels)
     createPlot(Tree)
+
+if __name__ == '__main__':
+    main()
