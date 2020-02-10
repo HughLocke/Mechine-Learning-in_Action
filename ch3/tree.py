@@ -77,9 +77,13 @@ def createTree(dataSet,labels): #创建树,返回当前节点,如果是叶子节
         subLabels = labels[:]
         node[bestFeatlabel][value] = createTree(splitDataSet(dataSet,bestFeatindex,value),labels)
     return node
+
+def main():
+    Dataset, label = CreateDataSet()
+    # print(Ent(dataset))
+    # print(splitDataSet(dataset,1,1))
+    # print(chooseBestFeatureTosplit(dataset))
+    return createTree(Dataset, label)
+
 if __name__ == '__main__':
-    Dataset,label = CreateDataSet()
-    #print(Ent(dataset))
-    #print(splitDataSet(dataset,1,1))
-    #print(chooseBestFeatureTosplit(dataset))
-    print(createTree(Dataset,label))
+    main()
