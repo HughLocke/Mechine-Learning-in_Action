@@ -109,9 +109,6 @@ def grabTree(filename):
 
 def main():
     Dataset, label = CreateDataSet()
-    # print(Ent(dataset))
-    # print(splitDataSet(dataset,1,1))
-    # print(chooseBestFeatureTosplit(dataset))
     tmp = label.copy()
     tree = createTree(Dataset, tmp)
     print(classify(tree,label,[1,1]))
