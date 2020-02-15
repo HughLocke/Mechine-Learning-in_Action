@@ -14,7 +14,7 @@ def CreateDictionary(dataSet): #创建一个祠表
         Dictionary = Dictionary | set(word)
     return list(Dictionary)
 
-def SetOfWordstoVec(dictionary,inputSet):
+def SetOfWordstoVec(dictionary,inputSet): #将句子在词表中转换为对应的向量
     returnVec = [0]*len(dictionary)
     for word in inputSet:
         if word in dictionary:
@@ -26,6 +26,7 @@ def SetOfWordstoVec(dictionary,inputSet):
 def main():
     dataset,classes = loadDataSet()
     dictionary = CreateDictionary(dataset)
+
     print(SetOfWordstoVec(dictionary,dataset[0]))
 
 
