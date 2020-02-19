@@ -65,6 +65,7 @@ def stocGradAscent0(dataMatrix,classLabels): #随机梯度上升算法
 
 #进行numIter次迭代,每次按照随机顺序将所有样本进行梯度下降
 def stocGradAscent1(dataMatrix,classLabels,numIter=150):
+    #print(dataMatrix)
     m,n = np.shape(dataMatrix)
     weights = np.ones(n)
     for j in range(numIter):
