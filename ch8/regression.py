@@ -2,7 +2,6 @@ from numpy import *
 
 def loadDataSet(fileName):
     numFeat = len(open(fileName).readline().split('\t')) - 1
-    print(numFeat)
     dataMat = []
     labelMat = []
     fr = open(fileName)
