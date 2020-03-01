@@ -1,6 +1,8 @@
 from regression import *
 from numpy import *
 import random as rd
+import pandas as pd
+
 def way1(dataset,ans):
     n, m = shape(dataset)
     dataset1 = mat(ones((n, m + 1)))

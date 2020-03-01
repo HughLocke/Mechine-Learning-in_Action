@@ -33,7 +33,6 @@ def way4(dataset,ans):
 
 def main():
     dataset,ans = loadDataSet('abalone.txt')
-
     #局部加权线性回归
     way1(dataset,ans)
     #基础线性回归
