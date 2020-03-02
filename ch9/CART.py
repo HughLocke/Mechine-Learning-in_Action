@@ -27,7 +27,7 @@ def regErr(dataSet):
 def linearSolve(dataSet):
     n,m = shape(dataSet)
     X = mat(ones((n,m))); Y = mat(ones((n,1)))
-    X[:,0:m - 1] = dataSet[:,0:m-1]; Y = dataSet[:,-1]
+    X[:,1:m] = dataSet[:,0:m-1]; Y = dataSet[:,-1]
     xTx = X.T * X
     if linalg.det(xTx) == 0.0:
         raise NameError("This matrix is singular,connot do inverse,try increasing the second value of ops")
@@ -106,6 +106,38 @@ def prune(tree,testData):
             return treeMean
         else: return tree
     else:return tree
+#回归树返回i叶子节点
+def regTreeEval(model,inDat):
+    return float(model)
+#模型树返回叶子节点
+def modelTreeEval(model,inDat):
+    n = shape(inDat)[1]
+    X = mat(ones((1,n + 1)))
+    X[:,1:n + 1]=inDat
+    return float(X*model)
+
+#将树和测试数据带入,得出结果
+def treeForeCast(tree,inData,modelEval=regTreeEval):
+    if not isTree(tree): return modelEval(tree,inData)
+    if inData[tree['spInd']] > tree['spVal']:
+        if isTree(tree['left']):
+            return treeForeCast(tree['left'],inData,modelEval)
+        else:
+            return modelEval(tree['left'],inData)
+    else:
+        if isTree(tree['right']):
+            return treeForeCast(tree['right'],inData,modelEval)
+        else:
+            return modelEval(tree['right'],inData)
+
+#将数据集代入树,得出预测集
+def createForeCast(tree,testData,modelEval = regTreeEval):
+    m = len(testData)
+    yHat = mat(zeros((m,1)))
+    for i in range(m):
+        yHat[i,0] = treeForeCast(tree,mat(testData[i]),modelEval)
+    return yHat
+
 def main():
     dataset = loadDataSet('exp2.txt')
     dataMat = mat(dataset)
