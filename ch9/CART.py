@@ -23,6 +23,25 @@ def regLeaf(dataSet):
 
 def regErr(dataSet):
     return var(dataSet[:,-1]) * shape(dataSet)[0]
+#线性回归
+def linearSolve(dataSet):
+    n,m = shape(dataSet)
+    X = mat(ones((n,m))); Y = mat(ones((n,1)))
+    X[:,0:m - 1] = dataSet[:,0:m-1]; Y = dataSet[:,-1]
+    xTx = X.T * X
+    if linalg.det(xTx) == 0.0:
+        raise NameError("This matrix is singular,connot do inverse,try increasing the second value of ops")
+    ws = xTx.I * (X.T * Y)
+    return ws,X,Y
+#负责生成叶子节点的模型
+def modelLeaf(dataSet):
+    ws,X,Y = linearSolve(dataSet)
+    return ws
+#负责计算叶子节点模型的误差
+def modelErr(dataSet):
+    ws,X,Y = linearSolve(dataSet)
+    yHat = X * ws
+    return sum(power(Y - yHat,2))
 
 #选出划分特征的下标和划分的值
 def chooseBestSplit(dataSet,leafType = regLeaf,errType=regErr,ops=(1,4)):
@@ -65,23 +84,35 @@ def isTree(obj):
 #合并两树
 def getMean(tree):
     if isTree(tree['right']): tree['right'] = getMean(tree['right'])
-    if isTree[tree['left']]: tree['left'] = getMean(tree['left'])
+    if isTree(tree['left']): tree['left'] = getMean(tree['left'])
     return (tree['left'] + tree['right']) / 2.0
+#使用测试集testData给树剪枝
 def prune(tree,testData):
-    if shape(testData)[0] == 0.0: return getMean(tree)
-    if (isTree(tree['right']) or isTree[tree['left']]):
+    if shape(testData)[0] == 0.0: return getMean(tree) #如果测试集已经不包含数据 则直接将整颗子树合并
+    # 如果左右节点有一棵是树,则将测试集按照节点信息划分,递归进入子树尝试剪枝
+    if (isTree(tree['right']) or isTree(tree['left'])):
         lSet,rSet = binSplitDataSet(testData,tree['spInd'],tree['spVal'])
     if isTree(tree['left']): tree['left'] = prune(tree['left'],lSet)
     if isTree(tree['right']): tree['right'] = prune(tree['right'],rSet)
+    #子树剪枝完成后,如果两孩子都是叶子节点,则尝试给这个节点剪枝,否则直接返回
     if not isTree(tree['left']) and not isTree(tree['right']):
         lSet,rSet = binSplitDataSet(testData,tree['spInd'],tree['spVal'])
-        errorNomerge = sum(power(lSet[:,-1] - tree['left'],2))
-
+        errorNoMerge = sum(power(lSet[:,-1] - tree['left'],2)) + \
+                       sum(power(rSet[:,-1] - tree['right'],2)) #测试集在剪枝状态下的表现
+        treeMean = (tree['left'] + tree['right']) / 2
+        errorMerge = sum(power(testData[:,-1] - treeMean,2)) #测试集在不剪枝情况下的误差表现
+        if errorMerge < errorNoMerge: #如果不切分误差反而更低,则剪枝
+            print("merging")
+            return treeMean
+        else: return tree
+    else:return tree
 def main():
-    dataset = loadDataSet('ex00.txt')
+    dataset = loadDataSet('exp2.txt')
     dataMat = mat(dataset)
-    root = createTree(dataMat,ops = (0,1))
-    print(root)
+    testSet = loadDataSet('ex2test.txt')
+    testMat = mat(testSet)
+    Tree = createTree(dataMat,modelLeaf,modelErr,ops = (1,10))
+    print(Tree)
 
 if __name__ == '__main__':
     main()
